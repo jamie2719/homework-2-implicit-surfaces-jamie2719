@@ -135,6 +135,21 @@ vec4 lambert(vec4 p, vec4 diffuseColor) {
 	return vec4(diffuseColor.rgb * (diffuseTerm + .2), 1.f);	
 }
 
+vec4 gradient(vec4 p, vec4 diffuseColor) {
+	vec4 normal = estimateNormal(p);
+	float t = dot(normalize(normal), normalize(lightPos - p));
+    // Avoid negative lighting values
+    t = clamp(t, 0.f, 1.f);
+
+    vec3 a = vec3(0.5, 0.5, 0.5);
+    vec3 b = vec3(0.5, 0.5, 0.5);
+    vec3 c = vec3(1, 1, 1);
+    vec3 d = vec3(0.0, 0.33, 0.67);
+
+
+    return vec4(a + b * cos(2.0f * PI * (c * t + d)), 1);
+}
+
 
 void main() {
 	float radius = 2.0;
@@ -167,7 +182,7 @@ void main() {
 	vec4 diffuseColor;
 
 
-vec4 minInter;
+	vec4 minInter;
 	float wallE;
 	float t = 0.01;
 	for (int i = 0; i < 64; i++) {
@@ -183,15 +198,12 @@ vec4 minInter;
 	}
 	if (intersected) {
 		diffuseColor = vec4(1, 1, 0, 1);
-		out_Col = lambert(translate(vec3(0, 0, 0)) * minInter, diffuseColor);
+		out_Col = gradient(translate(vec3(0, 0, 0)) * minInter, diffuseColor);
 	}
 
 	if(!intersected) {
-		diffuseColor = vec4(1.f, 1.f, 1.f, 1.f);
-		vec4 normal = vec4(0, 0, 1, 0);
-		float diffuseTerm = dot(normalize(normal), normalize(lightPos - p));
-		clamp(diffuseTerm, 0.f, 1.f);
-		out_Col = vec4(diffuseColor.rgb * (diffuseTerm + .2), 1.f);
+		diffuseColor = mix((fs_Pos + vec4(1.f))/ 2.f, vec4(0, 0, 0, 1), cos(u_Time * .01));//mix(vec4(1, 0, 1, 1), vec4(0, 1, 1, 1), cos(u_Time * .01)); //vec4(wallE, 0, 1, 1);
+		out_Col = diffuseColor;//vec4(0.f, 0, 0, 1);
 
 	}
 }
