@@ -1,3 +1,10 @@
+I created a model of Wall-E using raymarching. I added a gradient shader to color Wall-E and I colored the background depending on the position of the screen that we are at. Wall-E rotates with time, and his eyes also move up and down with time. I used unions to combine most of the shapes, but I used the subtraction operation on Wall-E's treads to carve out the inner portion of each wheel. I also used intersection to make Wall-E's eyes blink.
+
+Demo link: http://jamie2719.github.io/homework-2-implicit-surfaces-jamie2719
+
+
+
+
 # CIS-566-Project-2
 https://github.com/CIS-566-2018/homework-2-ray-marching-implicit-surfaces
 
