@@ -1,4 +1,5 @@
 import {vec3} from 'gl-matrix';
+import {mat4, vec4} from 'gl-matrix';
 import * as Stats from 'stats-js';
 import * as DAT from 'dat-gui';
 import Square from './geometry/Square';
@@ -13,6 +14,7 @@ const controls = {
 };
 
 let screenQuad: Square;
+let currTime: number = 0;
 
 function main() {
   // Initial display for framerate
@@ -46,7 +48,7 @@ function main() {
   screenQuad = new Square(vec3.fromValues(0, 0, 0));
   screenQuad.create();
 
-  const camera = new Camera(vec3.fromValues(0, 0, 5), vec3.fromValues(0, 0, 0));
+  const camera = new Camera(vec3.fromValues(0, 0, -5), vec3.fromValues(0, 0, 0));
 
   gl.clearColor(0.0, 0.0, 0.0, 1);
   gl.disable(gl.DEPTH_TEST);
@@ -58,8 +60,23 @@ function main() {
 
   // This function will be called every frame
   function tick() {
+    raymarchShader.setTime(currTime);
+
+    currTime++;
     camera.update();
     stats.begin();
+    let model = mat4.create();
+    let viewProj = mat4.create();
+
+    mat4.identity(model);
+    mat4.multiply(viewProj, camera.projectionMatrix, camera.viewMatrix);
+    raymarchShader.setModelMatrix(model);
+    raymarchShader.setViewProjMatrix(viewProj);
+    raymarchShader.setWidth(screen.width);
+    raymarchShader.setHeight(screen.height);
+    let eye = vec4.fromValues(camera.position[0], camera.position[1], camera.position[2], 1.0);
+    raymarchShader.setEye(eye);
+
 
     gl.viewport(0, 0, window.innerWidth, window.innerHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
