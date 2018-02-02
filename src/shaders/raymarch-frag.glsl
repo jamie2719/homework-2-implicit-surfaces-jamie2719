@@ -89,6 +89,11 @@ float differenceSDF(float distA, float distB) {
 float sceneSDF(vec4 intersection) {
 	float eyeL = sdCappedCylinder(intersection, vec2(.4, .5), vec3(.5, (cos(u_Time * .02) * .2) -2.f, 0), vec3(90, -10, 0));
 	float eyeR = sdCappedCylinder(intersection, vec2(.4, .5), vec3(-.5, (sin(u_Time * .02) * .2) -2.f, 0), vec3(90, 10, 0));
+	float eyeLTop = sdBox(intersection, vec4(.5, .5, .5, 1), vec3(.5, (cos(u_Time * .02) * .2) -2.f, 0), vec3(90, -10, 0));
+	eyeL = intersectSDF(eyeL, eyeLTop);
+	float eyeRTop = sdBox(intersection, vec4(.5, .5, .5, 1), vec3(-.5, (cos(u_Time * .02) * .2) -2.f, 0), vec3(90, -10, 0));
+	eyeR = intersectSDF(eyeR, eyeRTop);
+	
 	float eyeInsideL = sphereSDF(intersection, 1.f, vec3(.3, (cos(u_Time * .02) * .2) -2.f, -.5), vec3(0, 0, 0));
 	float eyeInsideR = sphereSDF(intersection, 1.f, vec3(-.3, (sin(u_Time * .02) * .2) -2.f, -.5), vec3(0, 0, 0));
 	eyeR = unionSDF(eyeR, eyeInsideR);
@@ -101,7 +106,11 @@ float sceneSDF(vec4 intersection) {
 	float body = sdBox(intersection, vec4(1, 1, 1, 1), vec3(0, 0, 0), vec3(0, 0, 0));
 	
 	float legL = sdTriPrism(intersection, vec2(1.2, .4), vec3(1.2, 1.5, 0), vec3(0, 90, 0));
+	float legLInner = sdTriPrism(intersection, vec2(.7, .2), vec3(1.5, 1.5, 0), vec3(0, 90, 0));
+	legL = differenceSDF(legL, legLInner);
 	float legR = sdTriPrism(intersection, vec2(1.2, .4), vec3(-1.2, 1.5, 0), vec3(0, 90, 0));
+	float legRInner = sdTriPrism(intersection, vec2(.7, .2), vec3(-1.5, 1.5, 0), vec3(0, 90, 0));
+	legR = differenceSDF(legR, legRInner);
 	float legs = unionSDF(legL, legR);
 
 	float armRUpper = sdCappedCylinder(intersection, vec2(.2, .2), vec3(-1.1, -.3, 0), vec3(0, -10, 0));
