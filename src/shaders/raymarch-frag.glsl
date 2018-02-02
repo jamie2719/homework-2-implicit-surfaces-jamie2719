@@ -87,10 +87,10 @@ float differenceSDF(float distA, float distB) {
 }
 
 float sceneSDF(vec4 intersection) {
-	float eyeL = sdCappedCylinder(intersection, vec2(.4, .5), vec3(.5, -2, 0), vec3(90, -10, 0));
-	float eyeR = sdCappedCylinder(intersection, vec2(.4, .5), vec3(-.5, -2, 0), vec3(90, 10, 0));
-	float eyeInsideL = sphereSDF(intersection, 1.f, vec3(.3, -2, -.5), vec3(0, 0, 0));
-	float eyeInsideR = sphereSDF(intersection, 1.f, vec3(-.3, -2, -.5), vec3(0, 0, 0));
+	float eyeL = sdCappedCylinder(intersection, vec2(.4, .5), vec3(.5, (cos(u_Time * .02) * .2) -2.f, 0), vec3(90, -10, 0));
+	float eyeR = sdCappedCylinder(intersection, vec2(.4, .5), vec3(-.5, (sin(u_Time * .02) * .2) -2.f, 0), vec3(90, 10, 0));
+	float eyeInsideL = sphereSDF(intersection, 1.f, vec3(.3, (cos(u_Time * .02) * .2) -2.f, -.5), vec3(0, 0, 0));
+	float eyeInsideR = sphereSDF(intersection, 1.f, vec3(-.3, (sin(u_Time * .02) * .2) -2.f, -.5), vec3(0, 0, 0));
 	eyeR = unionSDF(eyeR, eyeInsideR);
 	eyeL = unionSDF(eyeL, eyeInsideL);
 	float eyes = unionSDF(eyeL, eyeR);
@@ -154,7 +154,7 @@ vec4 gradient(vec4 p, vec4 diffuseColor) {
 void main() {
 	float radius = 2.0;
 
-	vec4 eye =  vec4(5.0 * sin(0.001 *u_Time), 0, 5.0 * cos(0.001 * u_Time), 1.0);
+	vec4 eye =  vec4(5.0 * sin(0.005 *u_Time), 0, 5.0 * cos(0.005 * u_Time), 1.0);
 	float fov = 75.f;
 	vec4 ref = vec4(0.0, 0.0, 0.0, 1.0);
 
